@@ -7,7 +7,7 @@ const logger = require('./src/logger');
 const routesAuth = express.Router();
 const app = express();
 
-app.set('llave', config.key);
+app.set('keylogin', config.key);
 
 app.use(bodyParse.urlencoded({ extended: true }));
 
@@ -26,7 +26,7 @@ app.post('/login', (req, res) => {
   const { body: { email, password } } = req;
 
   if (email === 'river' && password === 'river') {
-    const token = jwt.sign({ check: true }, app.get('llave'), { expiresIn: 1440 });
+    const token = jwt.sign({ check: true }, app.get('keylogin'), { expiresIn: 1440 });
     res.json({
       message: 'sucess',
       token,
@@ -38,12 +38,11 @@ app.post('/login', (req, res) => {
   }
 });
 
+// option one auth: individual route
 const auth = (req, res, next) => {
   const { headers: { 'access-token': token } } = req;
   if (token) {
-    console.log('auth----')
-    console.log(token);
-    jwt.verify(token, app.get('llave'), (err, decoded) => {
+    jwt.verify(token, app.get('keylogin'), (err, decoded) => {
       if (err) {
         return res.status(403).json({
           message: 'Error: Unauthorized'
@@ -60,10 +59,11 @@ const auth = (req, res, next) => {
   }
 }
 
+// option two auth, all routes
 routesAuth.use((req, res, next) => {
   const { headers: { 'access-token': token } } = req;
   if (token) {
-    jwt.verify(token, app.get('llave'), (err, decoded) => {
+    jwt.verify(token, app.get('keylogin'), (err, decoded) => {
       if (err) {
         return res.status(403).json({
           message: 'Unauthorized'
