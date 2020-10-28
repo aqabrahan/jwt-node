@@ -1,5 +1,4 @@
 # JWT test node
-- add sada
 
 - add `config.js` with content
   ```js
